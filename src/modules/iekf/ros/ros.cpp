@@ -20,7 +20,8 @@
 namespace ros
 {
 
-HashMap<const char *, const struct orb_metadata *, 128> _hmap;
+HashMap<const char *, const struct orb_metadata *, 128> _topicDict;
+HashMap<const char *, uint32_t, 128> _paramDict;
 
 Time::Time() : _nsec(0)
 {
@@ -68,19 +69,18 @@ void spin()
 Node::Node() :
 	_callbackListHead(NULL)
 {
-	_hmap.put("sensor_combined", ORB_ID(sensor_combined));
-	_hmap.put("vehicle_gps_position", ORB_ID(vehicle_gps_position));
-	_hmap.put("airspeed", ORB_ID(airspeed));
-	_hmap.put("optical_flow", ORB_ID(optical_flow));
-	_hmap.put("distance_sensor", ORB_ID(distance_sensor));
-	_hmap.put("vision_position_estimate", ORB_ID(vision_position_estimate));
-	_hmap.put("att_pos_mocap", ORB_ID(att_pos_mocap));
-
-	_hmap.put("vehicle_attitude", ORB_ID(vehicle_attitude));
-	_hmap.put("vehicle_local_position", ORB_ID(vehicle_local_position));
-	_hmap.put("vehicle_global_position", ORB_ID(vehicle_global_position));
-	_hmap.put("control_state", ORB_ID(control_state));
-	_hmap.put("estimator_status", ORB_ID(estimator_status));
+	_topicDict.put("sensor_combined", ORB_ID(sensor_combined));
+	_topicDict.put("vehicle_gps_position", ORB_ID(vehicle_gps_position));
+	_topicDict.put("airspeed", ORB_ID(airspeed));
+	_topicDict.put("optical_flow", ORB_ID(optical_flow));
+	_topicDict.put("distance_sensor", ORB_ID(distance_sensor));
+	_topicDict.put("vision_position_estimate", ORB_ID(vision_position_estimate));
+	_topicDict.put("att_pos_mocap", ORB_ID(att_pos_mocap));
+	_topicDict.put("vehicle_attitude", ORB_ID(vehicle_attitude));
+	_topicDict.put("vehicle_local_position", ORB_ID(vehicle_local_position));
+	_topicDict.put("vehicle_global_position", ORB_ID(vehicle_global_position));
+	_topicDict.put("control_state", ORB_ID(control_state));
+	_topicDict.put("estimator_status", ORB_ID(estimator_status));
 }
 
 void Node::spin()
@@ -111,7 +111,7 @@ void Node::addSubscriber(Subscriber *sub)
 
 bool Node::getTopicMeta(const char *topic, const struct orb_metadata **meta)
 {
-	return _hmap.get(topic, *meta);
+	return _topicDict.get(topic, *meta);
 }
 
 
@@ -198,10 +198,6 @@ Publisher::~Publisher()
 bool NodeHandle::ok()
 {
 	return true;
-}
-
-void NodeHandle::param(const char *name, float val, const char *topic)
-{
 }
 
 }

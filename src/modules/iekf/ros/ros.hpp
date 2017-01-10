@@ -40,6 +40,8 @@ private:
 
 // node for this process declared in ros.cpp
 extern Node *_node;
+extern HashMap<const char *, const struct orb_metadata *, 128> _topicDict;
+extern HashMap<const char *, uint32_t, 128> _paramDict;
 
 /***
  * Check if any callbacks are ready to fire and call them
@@ -192,7 +194,35 @@ public:
 
 	bool ok();
 
-	void param(const char *name, float val, const char *topic);
+	template<class T>
+	bool getParam(const char *key, T &val) const
+	{
+		uint32_t data = 0;
+
+		if (_paramDict.get(key, data)) {
+			val = (T)(data);
+			return true;
+
+		} else {
+			return false;
+		}
+	}
+
+	template<class T>
+	void setParam(const char *key, const T &val)
+	{
+		_paramDict.put(key, (uint32_t)val);
+	}
+
+	void deleteParam(const char *key);
+
+	template<class T>
+	void param(const char *key, T &val, T defaultValue) const
+	{
+		if (!getParam(key, val)) {
+			val = defaultValue;
+		}
+	}
 
 	template <class MsgType, class ObjType>
 	Subscriber subscribe(const char *topic, size_t queue_size,

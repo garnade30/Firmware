@@ -166,12 +166,19 @@ void IEKF::init()
 	_subDistance = _nh.subscribe("distance_sensor", 0, &IEKF::callbackDistance, this);
 	_subVision = _nh.subscribe("vision_position_estimate", 0, &IEKF::correctVision, this);
 	_subMocap = _nh.subscribe("att_pos_mocap", 0, &IEKF::correctMocap, this);
+
 	// publications
 	_pubAttitude = _nh.advertise<vehicle_attitude_s>("vehicle_attitude", 0);
 	_pubLocalPosition = _nh.advertise<vehicle_local_position_s>("vehicle_local_position", 0);
 	_pubGlobalPosition = _nh.advertise<vehicle_global_position_s>("vehicle_global_position", 0);
 	_pubControlState = _nh.advertise<control_state_s>("control_state", 0);
 	_pubEstimatorStatus = _nh.advertise<estimator_status_s>("estimator_status", 0);
+
+	// test params
+	_nh.setParam("test", 3.0f);
+	float test = 0;
+	_nh.param("test", test, 2.0f);
+	ROS_INFO("test %10.4f", double(test));
 }
 
 Vector<float, X::n> IEKF::dynamics(float t, const Vector<float, X::n> &x, const Vector<float, U::n> &u)
